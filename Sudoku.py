@@ -12,15 +12,15 @@ class Sudoku:
             if rows is None:
                 print("default self.rows")
                 rows = [
-                    "007001200",
-                    "009400807",
-                    "008005000",
-                    "000000000",
-                    "100004700",
-                    "002090600",
-                    "200500060",
-                    "000000085",
-                    "300006400",
+                    "501000600",
+                    "049057001",
+                    "820600040",
+                    "008705000",
+                    "090000057",
+                    "000006004",
+                    "304000028",
+                    "085009000",
+                    "062000005",
                 ]
             self.char_to_list(rows)
         self.update_sudoku(based_on="rows")
@@ -182,8 +182,17 @@ class Sudoku:
             self.check_found_update(found_something_single)
             found_something_box = self.fill_by_box()
             self.check_found_update(found_something_box)
+            found_something_row = self.fill_by_row()
+            self.check_found_update(found_something_row)
+            found_something_column = self.fill_by_columns()
+            self.check_found_update(found_something_column)
 
-            found_something = max([found_something_single, found_something_box])
+            found_something = max([
+                found_something_single,
+                found_something_box,
+                found_something_row,
+                found_something_column,
+            ])
 
         if it == max_it:
             if self.print_debug:
@@ -231,6 +240,57 @@ class Sudoku:
                     self.rows[pos_i][pos_j] = m_d
                     found_something = True
         return found_something
+
+    def fill_by_row(self):
+        """Looking at each row, if a digit
+        can only go to one place
+        """
+        found_something = False
+        for i in range(9):
+            row = self.rows[i]
+            missing_digits = [d for d in self.all_digits if d not in row]
+            possible_row_digits = [[] for i in range(len(row))]
+            for j, c in enumerate(row):
+                if c == 0:
+                    pos_i, pos_j = i, j
+                    possible_row_digits[j] = self.get_possible_digits_from_position(pos_i, pos_j)
+            for m_d in missing_digits:
+                possible_cells = [(c, k) for k, c in enumerate(possible_row_digits) if m_d in c]
+                # TODO: buscar parejas, trios...
+                if len(possible_cells) == 1:
+                    columns_index = possible_cells[0][1]
+                    if self.print_debug:
+                        print(f"in row {i}, digit {m_d} can only be in column {columns_index}")
+                    # TODO: updated basen on boxes??
+                    self.rows[i][columns_index] = m_d
+                    found_something = True
+        return found_something
+
+    def fill_by_columns(self):
+        """Looking at each column, if a digit
+        can only go to one place
+        """
+        found_something = False
+        for i in range(9):
+            column = self.columns[i]
+            missing_digits = [d for d in self.all_digits if d not in column]
+            possible_row_digits = [[] for i in range(len(column))]
+            for j, c in enumerate(column):
+                if c == 0:
+                    pos_i, pos_j = j, i
+                    possible_row_digits[j] = self.get_possible_digits_from_position(pos_i, pos_j)
+            for m_d in missing_digits:
+                possible_cells = [(c, k) for k, c in enumerate(possible_row_digits) if m_d in c]
+                # TODO: buscar parejas, trios...
+                if len(possible_cells) == 1:
+                    row_index = possible_cells[0][1]
+                    if self.print_debug:
+                        print(f"in column {i}, digit {m_d} can only be in row {row_index}")
+                    # TODO: updated basen on boxes??
+                    self.rows[row_index][i] = m_d
+                    found_something = True
+        return found_something
+
 
 s = Sudoku()
 s.draw()
