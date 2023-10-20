@@ -11,21 +11,53 @@ class Sudoku:
             if rows is None:
                 print("default self.rows")
                 rows = [
-                    "961043002",
+                    "060043002",
                     "703085941",
-                    "045921000",
+                    "040001000",
                     "390100005",
-                    "104092368",
+                    "104092000",
                     "502430007",
-                    "437809200",
+                    "407809000",
                     "010250830",
-                    "058304700",
+                    "008304000",
                 ]
+                # rows = [
+                #     "000400370",
+                #     "801000020",
+                #     "743908000",
+                #     "300070980",
+                #     "006000050",
+                #     "000040603",
+                #     "530204000",
+                #     "000090740",
+                #     "900050030",
+                # ]
+                # rows = [
+                #     "100000000",
+                #     "205000000",
+                #     "306000000",
+                #     "000000000",
+                #     "000000000",
+                #     "000000000",
+                #     "070000000",
+                #     "000000000",
+                #     "000000000",
+                # ]
+                # rows = ['600400370', '801000020', '743908060', '315672984', '406000257', '200040613', '530204090', '100090740', '900050030']
+                # rows = ['600400379', '801000020', '743908060', '315672984', '406000257', '200040613', '530204090', '100090740', '900050030']
             self.char_to_list(rows)
-        self.set_columns()
-        self.set_boxes()
+        self.update_sudoku(based_on="rows")
         if not self.check_valid():
             raise Exception("input sudoku is invalid")
+
+    def check_finished(self):
+        if not self.check_valid():
+            return False
+        else:
+            for r in self.rows:
+                if sum(r) != 45:
+                    return False
+        return True
 
     def draw(self, input="rows"):
         if input == "rows":
@@ -60,6 +92,22 @@ class Sudoku:
             rows.append(r_s)
         self.rows = rows
 
+    def list_to_char(self):
+        chars = []
+        for r in self.rows:
+            char = ""
+            for rr in r:
+                char += str(rr)
+            chars.append(char)
+        print(chars)
+
+    def update_sudoku(self, based_on="rows"):
+        # TODO: permitir otros. tiene sentido??
+        if based_on == 'rows':
+            self.set_columns()
+            self.set_boxes()
+
+
     def set_columns(self):
         columns = [[0 for _ in range(9)] for _ in range(9)]
         for i, r in enumerate(self.rows):
@@ -68,107 +116,10 @@ class Sudoku:
         self.columns = columns
 
     def set_boxes(self):
-        #TODO: mas elegante
-        boxes = [[0 for _ in range(9)] for _ in range(9)]
-        boxes[0] = [
-            self.rows[0][0],
-            self.rows[0][1],
-            self.rows[0][2],
-            self.rows[1][0],
-            self.rows[1][1],
-            self.rows[1][2],
-            self.rows[2][0],
-            self.rows[2][1],
-            self.rows[2][2],
-        ]
-        boxes[1] = [
-            self.rows[0][3],
-            self.rows[0][4],
-            self.rows[0][5],
-            self.rows[1][3],
-            self.rows[1][4],
-            self.rows[1][5],
-            self.rows[2][3],
-            self.rows[2][4],
-            self.rows[2][5],
-        ]
-        boxes[2] = [
-            self.rows[0][6],
-            self.rows[0][7],
-            self.rows[0][8],
-            self.rows[1][6],
-            self.rows[1][7],
-            self.rows[1][8],
-            self.rows[2][6],
-            self.rows[2][7],
-            self.rows[2][8],
-        ]
-        boxes[3] = [
-            self.rows[3][0],
-            self.rows[3][1],
-            self.rows[3][2],
-            self.rows[4][0],
-            self.rows[4][1],
-            self.rows[4][2],
-            self.rows[5][0],
-            self.rows[5][1],
-            self.rows[5][2],
-        ]
-        boxes[4] = [
-            self.rows[3][3],
-            self.rows[3][4],
-            self.rows[3][5],
-            self.rows[4][3],
-            self.rows[4][4],
-            self.rows[4][5],
-            self.rows[5][3],
-            self.rows[5][4],
-            self.rows[5][5],
-        ]
-        boxes[5] = [
-            self.rows[3][6],
-            self.rows[3][7],
-            self.rows[3][8],
-            self.rows[4][6],
-            self.rows[4][7],
-            self.rows[4][8],
-            self.rows[5][6],
-            self.rows[5][7],
-            self.rows[5][8],
-        ]
-        boxes[6] = [
-            self.rows[6][0],
-            self.rows[6][1],
-            self.rows[6][2],
-            self.rows[7][0],
-            self.rows[7][1],
-            self.rows[7][2],
-            self.rows[8][0],
-            self.rows[8][1],
-            self.rows[8][2],
-        ]
-        boxes[7] = [
-            self.rows[6][3],
-            self.rows[6][4],
-            self.rows[6][5],
-            self.rows[7][3],
-            self.rows[7][4],
-            self.rows[7][5],
-            self.rows[8][3],
-            self.rows[8][4],
-            self.rows[8][5],
-        ]
-        boxes[8] = [
-            self.rows[6][6],
-            self.rows[6][7],
-            self.rows[6][8],
-            self.rows[7][6],
-            self.rows[7][7],
-            self.rows[7][8],
-            self.rows[8][6],
-            self.rows[8][7],
-            self.rows[8][8],
-        ]
+        boxes = [[] for _ in range(9)]
+        for i in range(9):
+            for j in range(9):
+                boxes[self.get_box_from_position(i, j)].append(self.rows[i][j])
         self.boxes = boxes
 
     def check_valid_9(self, l):
@@ -224,17 +175,67 @@ class Sudoku:
 
     def get_possible_numbers_from_position(self, i, j):
         possible_numbers = [k+1 for k in range(9)]
+        box_numbers = self.boxes[self.get_box_from_position(i, j)]
+        row_numbers = self.rows[i]
+        column_numbers = self.columns[j]
+        impossible_numbers = list(set(box_numbers + row_numbers + column_numbers))
+        possible_numbers = [p for p in possible_numbers if p not in impossible_numbers]
+        return possible_numbers
 
+    ## METODOS RESOLUCION
+    def fill_naked_singles(self):
+        """Easies resolution method:
+            fills cells that only can have 1 digit
+        """
+        it = 0
+        found_something = False
+        while it < 90 and (found_something is True or it == 0):
+            # print("-----")
+            found_something = False
+            for i in range(9):
+                for j in range(9):
+                    if it == 1 and i == 0 and j == 7:
+                        print(self.rows[i][j])
+                        print(self.get_possible_numbers_from_position(i, j))
+                    if self.rows[i][j] == 0:
+                        possible_numbers = self.get_possible_numbers_from_position(i, j)
+                        if len(possible_numbers) == 1:
+                            only_possible_number = possible_numbers[0]
+                            if self.print_debug:
+                                print(f"i = {i}, j = {j}, only possible number: {only_possible_number}")
+                            self.rows[i][j] = only_possible_number
+                            found_something = True
+            if found_something:
+                if self.print_debug:
+                    print("updating")
+                self.update_sudoku(based_on="rows")
+                self.draw()
+            it += 1
+        return found_something
 
-    def fill_row_numbers(self):
-        pass
+    def fill_by_box(self):
+        """
+        """
+        for i in range(9):
+            pass
 
 s = Sudoku()
 s.draw()
-for i in range(9):
-    for j in range(9):
-
-        print(f"i = {i}, j = {j}, box = {s.get_box_from_position(i, j)}")
+s.fill_naked_singles()
+# s.draw()
+# i = 0
+# j = 8
+# possible_numbers = [k+1 for k in range(9)]
+# box_numbers = s.boxes[s.get_box_from_position(i, j)]
+# row_numbers = s.rows[i]
+# column_numbers = srows[j]
+# s.check_finished()
+s.list_to_char()
+# for i in range(9):
+#     for j in range(9):
+#         # print(s.get_possible_numbers_from_position(i, j))
+#         # print(f"i = {i}, j = {j}, box = {s.get_box_from_position(i, j)}")
+#         print(f"i = {i}, j = {j}, possible_numbers = {s.get_possible_numbers_from_position(i, j)}")
 
 # sudoku_char = [
 #     "961043002",
