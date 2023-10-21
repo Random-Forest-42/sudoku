@@ -12,16 +12,36 @@ class Sudoku:
             if rows is None:
                 print("default self.rows")
                 rows = [
-                    "501000600",
-                    "049057001",
-                    "820600040",
-                    "008705000",
-                    "090000057",
-                    "000006004",
-                    "304000028",
-                    "085009000",
-                    "062000005",
+                    # "007001200",
+                    # "009400807",
+                    # "008005000",
+                    # "000000000",
+                    # "100004700",
+                    # "002090600",
+                    # "200500060",
+                    # "000000085",
+                    # "300006400",
+    "501000600",
+    "049057001",
+    "820600040",
+    "008705000",
+    "090000057",
+    "000006004",
+    "304000028",
+    "085009000",
+    "062000005",
                 ]
+                # rows = [
+                #     '000201000',
+                #     '009000000',
+                #     '000304000',
+                #     '000000000',
+                #     '000000000',
+                #     '000900000',
+                #     '000000090',
+                #     '000000000',
+                #     '000006000',
+                # ]
             self.char_to_list(rows)
         self.update_sudoku(based_on="rows")
         if not self.check_valid():
@@ -147,7 +167,7 @@ class Sudoku:
             box_index: what box number is
             box_position: within that box
         Ex:
-            box 1, position 4 --> i=0, j=1
+            box 0, position 3 --> i=1, j=1
         """
         box_first_number_i = int(i/3)*3
         box_first_number_j = (i%3)*3
@@ -298,13 +318,18 @@ s.draw()
 # s.fill_by_box()
 # s.draw()
 s.iterative_solve()
-# s.list_to_char()
-
+s.list_to_char()
+s.rows
+s.columns
+s.boxes
 # s.get_position_from_box(2, 2)
 
-# for i in range(9):
-#     for j in range(9):
-#         # print(s.get_possible_numbers_from_position(i, j))
-#         # print(f"i = {i}, j = {j}, box = {s.get_box_from_position(i, j)}")
-#         print(f"i = {i}, j = {j}, possible_numbers = {s.get_possible_numbers_from_position(i, j)}")
+for i in range(9):
+    for j in range(9):
+        # print(s.get_possible_numbers_from_position(i, j))
+        # print(f"i = {i}, j = {j}, box = {s.get_box_from_position(i, j)}")
+        # print(f"i = {i}, j = {j}, possible_numbers = {s.get_possible_numbers_from_position(i, j)}")
+        new_i, new_j = s.get_position_from_box(i,j)
+        print(f"caja = {i}, posicion = {j}, corresponde a fila {new_i}, columna = {new_j}")
+
 
