@@ -12,24 +12,15 @@ class Sudoku:
             if rows is None:
                 print("default self.rows")
                 rows = [
-                    # "007001200",
-                    # "009400807",
-                    # "008005000",
-                    # "000000000",
-                    # "100004700",
-                    # "002090600",
-                    # "200500060",
-                    # "000000085",
-                    # "300006400",
-    "501000600",
-    "049057001",
-    "820600040",
-    "008705000",
-    "090000057",
-    "000006004",
-    "304000028",
-    "085009000",
-    "062000005",
+                    "076380000",
+                    "000000200",
+                    "004009007",
+                    "700005006",
+                    "605000103",
+                    "300400008",
+                    "800100500",
+                    "002000000",
+                    "000076380",
                 ]
                 # rows = [
                 #     '000201000',
@@ -176,11 +167,15 @@ class Sudoku:
         return box_first_number_i + sum_i_from_j, box_first_number_j + sum_j_from_j
 
     def get_possible_digits_from_position(self, i, j):
-        box_numbers = self.boxes[self.get_box_from_position(i, j)]
-        row_numbers = self.rows[i]
-        column_numbers = self.columns[j]
-        impossible_digits = list(set(box_numbers + row_numbers + column_numbers))
-        possible_digits = [p for p in self.all_digits if p not in impossible_digits]
+        own_digit = self.rows[i][j]
+        if own_digit != 0:
+            possible_digits = []
+        else:
+            box_digits = self.boxes[self.get_box_from_position(i, j)]
+            row_digits = self.rows[i]
+            column_digits = self.columns[j]
+            impossible_digits = list(set(box_digits + row_digits + column_digits))
+            possible_digits = [p for p in self.all_digits if p not in impossible_digits]
         return possible_digits
 
     def check_found_update(self, flag):
@@ -311,6 +306,20 @@ class Sudoku:
                     found_something = True
         return found_something
 
+    def fill_by_row_pairs(self):
+        """Looking at each row, see if there are pairs
+        """
+        found_something = False
+        for i in range(9):
+            row = self.rows[i]
+            missing_digits = [d for d in self.all_digits if d not in row]
+            possible_row_digits = [[] for i in range(len(row))]
+            for j, c in enumerate(row):
+                if c == 0:
+                    pos_i, pos_j = i, j
+                    possible_row_digits[j] = self.get_possible_digits_from_position(pos_i, pos_j)
+            print(possible_row_digits)
+        return found_something
 
 s = Sudoku()
 s.draw()
@@ -328,8 +337,7 @@ for i in range(9):
     for j in range(9):
         # print(s.get_possible_numbers_from_position(i, j))
         # print(f"i = {i}, j = {j}, box = {s.get_box_from_position(i, j)}")
-        # print(f"i = {i}, j = {j}, possible_numbers = {s.get_possible_numbers_from_position(i, j)}")
-        new_i, new_j = s.get_position_from_box(i,j)
-        print(f"caja = {i}, posicion = {j}, corresponde a fila {new_i}, columna = {new_j}")
-
+        print(f"i = {i}, j = {j}, possible_numbers = {s.get_possible_digits_from_position(i, j)}")
+        # new_i, new_j = s.get_position_from_box(i,j)
+        # print(f"caja = {i}, posicion = {j}, corresponde a fila {new_i}, columna = {new_j}")
 
